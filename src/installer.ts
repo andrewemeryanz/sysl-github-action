@@ -138,28 +138,27 @@ function releaseComparison(a: Release, b: Release) {
 // Add the given directory to the path.
 async function addToPath(dir: string) {
 
-    // add the bin folder to the PATH
-    dir = path.join(dir, "bin");
+    // add the directory to the path
     core.addPath(dir);
 
     // make available Go-specific compiler to the PATH,
     // this is needed because of https://github.com/actions/setup-go/issues/14
     const goBin: string = await io.which("go", false);
-    if (goBin) {
-        // Go is installed, add $GOPATH/bin to the $PATH because setup-go
-        // doesn't do it for us.
-        let stdOut = "";
-        let options = {
-            listeners: {
-                stdout: (data: Buffer) => {
-                    stdOut += data.toString();
-                }
-            }
-        };
+    if (goBin == undefined) return;
 
-        await exc.exec("go", ["env", "GOPATH"], options);
-        const goPath: string = stdOut.trim();
-        core.debug("GOPATH: " + goPath);
-        core.addPath(path.join(goPath, "bin"));
-    }
+    // Go is installed, add $GOPATH/bin to the $PATH because setup-go
+    // doesn't do it for us.
+    let stdOut = "";
+    let options = {
+        listeners: {
+            stdout: (data: Buffer) => {
+                stdOut += data.toString();
+            }
+        }
+    };
+
+    await exc.exec("go", ["env", "GOPATH"], options);
+    const goPath: string = stdOut.trim();
+    core.debug("GOPATH: " + goPath);
+    core.addPath(path.join(goPath, "bin"));
 }
