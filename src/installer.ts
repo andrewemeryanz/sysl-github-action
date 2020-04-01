@@ -145,21 +145,22 @@ async function addToPath(dir: string) {
     // make available Go-specific compiler to the PATH,
     // this is needed because of https://github.com/actions/setup-go/issues/14
     const goBin: string = await io.which("go", false);
-    if (goBin == undefined) return;
+    if (goBin) {
 
-    // Go is installed, add $GOPATH/bin to the $PATH because setup-go
-    // doesn't do it for us.
-    let stdOut = "";
-    let options = {
-        listeners: {
-            stdout: (data: Buffer) => {
-                stdOut += data.toString();
+        // Go is installed, add $GOPATH/bin to the $PATH because setup-go
+        // doesn't do it for us.
+        let stdOut = "";
+        let options = {
+            listeners: {
+                stdout: (data: Buffer) => {
+                    stdOut += data.toString();
+                }
             }
-        }
-    };
+        };
 
-    await exc.exec("go", ["env", "GOPATH"], options);
-    const goPath: string = stdOut.trim();
-    core.debug("GOPATH: " + goPath);
-    core.addPath(path.join(goPath, "bin"));
+        await exc.exec("go", ["env", "GOPATH"], options);
+        const goPath: string = stdOut.trim();
+        core.debug("GOPATH: " + goPath);
+        core.addPath(path.join(goPath, "bin"));
+    }
 }
