@@ -139,6 +139,7 @@ function releaseComparison(a: Release, b: Release) {
 async function addToPath(dir: string) {
 
     // add the directory to the path
+    core.debug("add path: " + dir);
     core.addPath(dir);
 
     // make available Go-specific compiler to the PATH,
