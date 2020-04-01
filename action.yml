@@ -1,0 +1,13 @@
+name: 'Install Sysl'
+description: 'Download Sysl and add it to the path'
+author: 'ANZ'
+inputs:
+  version:
+    description: 'Version to use. Example: 1.2.x'
+    required: false
+runs:
+  using: 'node12'
+  main: 'lib/main.js'
+branding:
+  icon: 'box'
+  color: 'green'
