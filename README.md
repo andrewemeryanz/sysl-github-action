@@ -31,7 +31,8 @@ To pin the exact version:
 
 ## Version matching
 
-The matched version will always return the latest stable version unless no stable versions match, in which case the latest pre-release version will be returned.
+The matched version will always return the latest stable version unless no stable versions match, in 
+which case the latest pre-release version will be returned.
 For example, given the following releases:
 ```text
 1.1.0 - prerelease
@@ -39,7 +40,8 @@ For example, given the following releases:
 1.0.0
 ``` 
 
-Requesting version `1.x` will return `1.0.1` (the latest stable) whereas requesting `1.1.x` will return `1.1.0 - prerelease` (the latest prerelease).
+Requesting version `1.x` will return `1.0.1` (the latest stable) whereas requesting `1.1.x` will 
+return `1.1.0 - prerelease` (the latest prerelease).
 
 ## Development
 
@@ -57,7 +59,9 @@ $ npm run test
 
 ## Enable verbose logging for a pipeline
 
-Additional log events with the prefix ::debug:: can be [enabled](https://github.com/actions/toolkit/blob/master/docs/action-debugging.md#step-debug-logs) by setting the secret `ACTIONS_STEP_DEBUG` to `true`.
+Additional log events with the prefix ::debug:: can be 
+[enabled](https://github.com/actions/toolkit/blob/master/docs/action-debugging.md#step-debug-logs) 
+by setting the secret `ACTIONS_STEP_DEBUG` to `true`.
 
 ## Release
 

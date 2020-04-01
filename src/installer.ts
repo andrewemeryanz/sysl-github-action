@@ -1,30 +1,9 @@
-// Load tempDirectory before it gets wiped by tool-cache
-let tempDirectory = process.env["RUNNER_TEMP"] || "";
-
 import * as os from "os";
-import * as path from "path";
 import * as util from "util";
 import * as restm from "typed-rest-client/RestClient";
 import * as semver from "semver";
 import * as core from "@actions/core";
 import * as tc from "@actions/tool-cache";
-import * as exc from "@actions/exec";
-import * as io from "@actions/io";
-
-if (!tempDirectory) {
-    let baseLocation;
-    if (process.platform === "win32") {
-        // On windows use the USERPROFILE env variable
-        baseLocation = process.env["USERPROFILE"] || "C:\\";
-    } else {
-        if (process.platform === "darwin") {
-            baseLocation = "/Users";
-        } else {
-            baseLocation = "/home";
-        }
-    }
-    tempDirectory = path.join(baseLocation, "actions", "temp");
-}
 
 let osPlat: string = os.platform();
 let osArch: string = os.arch();
@@ -48,7 +27,8 @@ class Release implements Release {
 /**
  * Install the sysl binary for the given version.
  *
- * @param version A version match string. Accepts semver (1.2.0), partial (1.2) or x-trailing (1.2.x).
+ * @param version A version match string. Accepts semver (1.2.0), partial (1.2) or x-trailing
+ *                (1.2.x). Also accepts leading v (v1.2.0).
  */
 export async function install(version: string) {
     const release = await getRelease(version);
@@ -99,7 +79,12 @@ export function getDownloadUrl(version: string): string {
     return util.format("https://github.com/anz-bank/sysl/releases/download/v%s/%s", version, filename);
 }
 
-// Get the release to retrieve based on the `version` string.
+/**
+ * Get the release to retrieve based on the given version.
+ *
+ * @param version A version match string. Accepts semver (1.2.0), partial (1.2) or x-trailing
+ *                (1.2.x). Also accepts leading v (v1.2.0).
+ */
 async function getRelease(version: string): Promise<Release> {
     if (version.startsWith("v")) version = version.slice(1, version.length); // strip leading `v`
     if (version.endsWith(".x")) version = version.slice(0, version.length - 2); // strip trailing .x
@@ -137,30 +122,6 @@ function releaseComparison(a: Release, b: Release) {
 
 // Add the given directory to the path.
 async function addToPath(dir: string) {
-
-    // add the directory to the path
     core.debug("add path: " + dir);
     core.addPath(dir);
-
-    // make available Go-specific compiler to the PATH,
-    // this is needed because of https://github.com/actions/setup-go/issues/14
-    const goBin: string = await io.which("go", false);
-    if (goBin) {
-
-        // Go is installed, add $GOPATH/bin to the $PATH because setup-go
-        // doesn't do it for us.
-        let stdOut = "";
-        let options = {
-            listeners: {
-                stdout: (data: Buffer) => {
-                    stdOut += data.toString();
-                }
-            }
-        };
-
-        await exc.exec("go", ["env", "GOPATH"], options);
-        const goPath: string = stdOut.trim();
-        core.debug("GOPATH: " + goPath);
-        core.addPath(path.join(goPath, "bin"));
-    }
 }
